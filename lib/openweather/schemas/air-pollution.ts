@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { coordInputSchema, unixSecondsSchema } from "./common"
+import { coordInputSchema, coordSchema, unixSecondsSchema } from "./common"
 
 export const airInputSchema = coordInputSchema
 
@@ -27,8 +27,13 @@ export const airQualityIndexSchema = z
   )
 export type AirQualityIndex = z.infer<typeof airQualityIndexSchema>
 
+const airCoordSchema = z.union([
+  z.tuple([z.number(), z.number()]),
+  coordSchema.transform((coord): [number, number] => [coord.lon, coord.lat]),
+])
+
 export const airPollutionSchema = z.object({
-  coord: z.tuple([z.number(), z.number()]),
+  coord: airCoordSchema,
   list: z.array(
     z.object({
       dt: z.number(),

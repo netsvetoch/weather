@@ -29,6 +29,15 @@ describe("airPollutionSchema", () => {
     expect(parsed.list[0]?.main.aqi).toBe(4)
     expectTypeOf(parsed.list[0]!.main.aqi).toEqualTypeOf<AirQualityIndex>()
   })
+
+  test("accepts live coord object { lon, lat }", () => {
+    const parsed = airPollutionSchema.parse({
+      ...fixture,
+      coord: { lon: 58.9831, lat: 53.4242 },
+    })
+    expect(parsed.coord).toEqual([58.9831, 53.4242])
+    expect(parsed.list[0]?.main.aqi).toBe(4)
+  })
 })
 
 describe("airHistoryInputSchema", () => {
