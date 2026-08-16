@@ -12,6 +12,12 @@ export function emptyStore(): WeatherStore {
   return { places: [], activeId: null, catalog: {}, snapshots: {} }
 }
 
+const SERVER_SNAPSHOT: WeatherStore = emptyStore()
+
+export function getServerSnapshot(): WeatherStore {
+  return SERVER_SNAPSHOT
+}
+
 export function readStore(storage: Storage): WeatherStore {
   try {
     const raw = storage.getItem(STORAGE_KEY)

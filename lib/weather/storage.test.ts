@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest"
-import { emptyStore, isFresh, putSnapshot, readStore, selectPlace, starActive, unstar, writeStore } from "./storage"
+import { emptyStore, getServerSnapshot, isFresh, putSnapshot, readStore, selectPlace, starActive, unstar, writeStore } from "./storage"
 import { MAX_PLACES, STORAGE_KEY, type Place, type Snapshot } from "./types"
 
 function memoryStorage(): Storage {
@@ -102,4 +102,14 @@ test("readStore returns empty on garbage", () => {
 test("isFresh is 10 minutes", () => {
   expect(isFresh({ ...snapshot, fetchedAt: 1000 }, 1000 + 9 * 60 * 1000)).toBe(true)
   expect(isFresh({ ...snapshot, fetchedAt: 1000 }, 1000 + 10 * 60 * 1000 + 1)).toBe(false)
+})
+
+test("getServerSnapshot returns a cached empty store", () => {
+  expect(getServerSnapshot()).toBe(getServerSnapshot())
+  expect(getServerSnapshot()).toEqual({
+    places: [],
+    activeId: null,
+    catalog: {},
+    snapshots: {},
+  })
 })

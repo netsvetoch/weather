@@ -9,6 +9,7 @@ import { placeFromGeo } from "@/lib/weather/place"
 import { isLiveRefresh } from "@/lib/weather/refresh"
 import {
   emptyStore,
+  getServerSnapshot,
   isFresh,
   putSnapshot,
   readStore,
@@ -76,7 +77,7 @@ export function useWeather() {
     () => true,
     () => false
   )
-  const store = useSyncExternalStore(subscribe, getSnapshot, emptyStore)
+  const store = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
   const [waiting, setWaiting] = useState(false)
   const [banner, setBanner] = useState<string | null>(null)
   const [fatal, setFatal] = useState<string | null>(null)
