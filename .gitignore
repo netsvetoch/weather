@@ -37,3 +37,7 @@ next-env.d.ts
 
 # git worktrees
 .worktrees/
+
+# serwist generated
+public/sw.js
+public/swe-worker-*.js
