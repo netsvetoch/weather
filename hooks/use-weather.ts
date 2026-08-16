@@ -5,6 +5,7 @@ import { useCallback, useEffect, useSyncExternalStore, useState } from "react"
 import type { GeoPlace } from "@/lib/openweather"
 import { WEATHER_COPY, offlineBanner } from "@/lib/weather/errors"
 import { placeFromGeo } from "@/lib/weather/place"
+import { isLiveRefresh } from "@/lib/weather/refresh"
 import {
   emptyStore,
   isFresh,
@@ -40,6 +41,7 @@ type GeoApi = {
 
 const listeners = new Set<() => void>()
 let cache: WeatherStore | null = null
+let refreshSeq = 0
 
 function emit() {
   for (const listener of listeners) listener()
@@ -89,12 +91,19 @@ export function useWeather() {
   }, [toast])
 
   const refresh = useCallback(async (place: Place) => {
+    const seq = ++refreshSeq
     const current = cache ?? emptyStore()
+    const live = () =>
+      isLiveRefresh(
+        { placeId: place.id, seq },
+        { activeId: (cache ?? current).activeId, seq: refreshSeq }
+      )
     try {
       const response = await fetch(
         `/api/weather?lat=${place.lat}&lon=${place.lon}`
       )
       const body = (await response.json()) as ApiResult<WeatherPayload>
+      if (!live()) return
       if (!body.ok) {
         const snapshot = (cache ?? current).snapshots[place.id]
         if (isNetworkWeatherError(body.error)) {
@@ -112,6 +121,7 @@ export function useWeather() {
       setFatal(null)
       setWaiting(false)
     } catch {
+      if (!live()) return
       const snapshot = (cache ?? current).snapshots[place.id]
       if (snapshot) setBanner(offlineBanner(snapshot.fetchedAt))
       else setFatal(WEATHER_COPY.OFFLINE)
