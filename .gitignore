@@ -43,3 +43,4 @@ public/sw.js
 public/swe-worker-*.js
 
 .open-next
+.wrangler

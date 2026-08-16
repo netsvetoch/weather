@@ -3,5 +3,10 @@
   "name": "weather",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-08-16",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "keep_names": false,
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS",
+  },
 }
