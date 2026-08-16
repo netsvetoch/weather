@@ -4,6 +4,7 @@ import { useCallback, useEffect, useSyncExternalStore, useState } from "react"
 
 import type { GeoPlace } from "@/lib/openweather"
 import { WEATHER_COPY, offlineBanner } from "@/lib/weather/errors"
+import { shouldClearOfflineChrome } from "@/lib/weather/offline-chrome"
 import { placeFromGeo } from "@/lib/weather/place"
 import { isLiveRefresh } from "@/lib/weather/refresh"
 import {
@@ -155,7 +156,13 @@ export function useWeather() {
   }, [])
 
   const unstarPlace = useCallback((id: PlaceId) => {
-    commit(unstar(cache ?? emptyStore(), id))
+    const current = cache ?? emptyStore()
+    const next = unstar(current, id)
+    commit(next)
+    if (shouldClearOfflineChrome(current, next)) {
+      setBanner(null)
+      setFatal(null)
+    }
   }, [])
 
   const nearby = useCallback(() => {
